@@ -1,0 +1,28 @@
+name: chessbrics
+services:
+  chessbrics:
+    image: chessbrics:local
+    build: .
+    init: true
+    restart: unless-stopped
+    environment:
+      CHESSBRICS_LLM_URL: "${CHESSBRICS_LLM_URL:-}"
+      CHESSBRICS_LLM_MODEL: "${CHESSBRICS_LLM_MODEL:-}"
+      CHESSBRICS_LLM_KEY: "${CHESSBRICS_LLM_KEY:-}"
+      CHESSBRICS_STOCKFISH_PATH: "${CHESSBRICS_STOCKFISH_PATH:-}"
+      CHESSBRICS_SUPPORT_CREDIT: "${CHESSBRICS_SUPPORT_CREDIT:-1}"
+    ports:
+      - "${CHESSBRICS_BIND:-0.0.0.0}:${CHESSBRICS_PORT:-3000}:3000"
+    volumes:
+      - matches:/app/data
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 8
+volumes:
+  matches:
+

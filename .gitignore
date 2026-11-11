@@ -1,0 +1,5 @@
+data/
+node_modules/
+presentation/work/
+__pycache__/
+.env

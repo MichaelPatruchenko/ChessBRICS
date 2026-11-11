@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Шахматы БРИКС на четверых. Доска 10×10, новая фигура и командная игра.">
+<title>Шахматы БРИКС — Игровой зал</title>
+<link id="siteIcon" rel="icon" href="/brand.svg">
+<link rel="stylesheet" href="/style.css">
+<script type="module" src="/app.js"></script>
+</head>
+<body>
+<header><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><img class="mark" src="/brand.svg" alt=""><span class="mark icon-art art-brand"></span></span> ШАХМАТЫ <b>БРИКС</b></a><div class="header-actions">
+<button id="visualToggle" class="quiet visual-toggle" type="button" aria-pressed="true" aria-label="Дополнительный визуал" title="Дополнительный визуал"><span class="ui-icon art-spark" aria-hidden="true"><span class="icon-fallback">✦</span></span><span class="visual-label">Доп. визуал</span></button>
+<button id="settingsOpen" class="quiet" type="button" aria-label="Настройки"><span class="ui-icon art-gear" aria-hidden="true"><span class="icon-fallback">⚙</span></span></button>
+<button id="accountOpen" class="quiet" type="button" aria-label="Аккаунт"><span class="ui-icon art-person" aria-hidden="true"><span class="icon-fallback"></span></span><span id="accountLabel">Аккаунт</span></button>
+<button id="rules" class="quiet">Правила игры <span class="ui-icon art-book" aria-hidden="true"><span class="icon-fallback">↗</span></span></button>
+</div></header>
+<main>
+<div class="intro"><div class="intro-copy"><div class="eyebrow"><i></i> ИГРОВОЙ ЗАЛ</div><h1>Шахматы БРИКС<span>.</span></h1><p id="introVariant">Четыре цвета. Две команды. Доска 10×10.</p></div>
+<div class="intro-art" aria-hidden="true"><img data-visual-src="/hall.webp" alt="" decoding="async"></div>
+</div>
+<div class="layout">
+<section class="controls-stack" aria-label="Управление партией">
+<section class="panel" id="setup">
+<div class="eyebrow">НОВАЯ ПАРТИЯ</div>
+<h2>Выберите шахматы</h2>
+<p id="variantHint">БРИКС · доска 10×10, четыре игрока и две команды.</p>
+<a id="resume" class="resume" href="/" hidden>Вернуться в последнюю комнату <span class="ui-icon art-next" aria-hidden="true"><span class="icon-fallback">→</span></span></a>
+<form id="form">
+<fieldset class="variant-picker"><legend>Вариант</legend>
+<label><input type="radio" name="variant" value="brics" checked><span class="variant-art piece-art piece-x c2" aria-hidden="true"></span><span>БРИКС 2×2 <small>10×10 · 4 игрока</small></span></label>
+<label><input type="radio" name="variant" value="brics-duel"><span class="variant-art piece-art piece-x c0" aria-hidden="true"></span><span>БРИКС 1×1 <small>10×10 · 2 игрока</small></span></label>
+<label><input type="radio" name="variant" value="classic"><span class="variant-art piece-art piece-k classic-white" aria-hidden="true"></span><span>Классика <small>8×8 · 2 игрока</small></span></label>
+</fieldset>
+<label><span>Ваше имя <span class="optional">· необязательно</span></span><input id="name" maxlength="28" placeholder="Гость" autocomplete="nickname"></label>
+<div class="controls">
+<label>Минуты на игрока<select id="minutes"><option>1</option><option>3</option><option>5</option><option selected>10</option><option>15</option><option>20</option><option>30</option><option>60</option></select></label>
+<label>Секунд за ход<select id="increment"><option>0</option><option>2</option><option selected>3</option><option>5</option><option>10</option><option>15</option><option>30</option></select></label>
+</div>
+<label class="check-option"><input id="publicRoom" type="checkbox"> Показать комнату в общем лобби</label>
+<button class="primary" type="submit">Создать комнату <span class="ui-icon art-next" aria-hidden="true"><span class="icon-fallback">↗</span></span></button>
+<label class="bot-setting">Уровень ботов<select id="botLevel"><option value="easy">Лёгкий</option><option value="medium" selected>Средний</option><option value="hard">Сильный</option><option id="stockfishOption" value="stockfish" hidden disabled>Stockfish</option><option id="llmOption" value="llm" hidden disabled>LLM через API</option></select></label>
+<button id="practice" type="button">Играть с ботами <span class="ui-icon art-next" aria-hidden="true"><span class="icon-fallback">→</span></span></button>
+</form>
+<button id="localDuel" class="quiet" type="button">Играть на одном экране</button>
+<button id="lobbyOpen" class="quiet" type="button">Открытые комнаты <span class="ui-icon art-next" aria-hidden="true"><span class="icon-fallback">→</span></span></button>
+<button id="quick" type="button">Найти рейтинговую партию</button>
+<button id="studyOpen" class="quiet" type="button">Разбор и задачи</button>
+<div class="hub-links"><button id="liveOpen" class="quiet" type="button">Смотреть партии</button><button id="leadersOpen" class="quiet" type="button">Рейтинги</button><button id="tournamentsOpen" class="quiet" type="button">Турниры</button></div>
+</section>
+<section class="panel" id="room" hidden>
+<div class="eyebrow" id="roomLabel"></div>
+<h2 id="roomTitle"></h2>
+<p id="roomDetails"></p>
+<div id="invite" hidden>
+<label for="inviteLink">Ссылка на комнату</label>
+<div class="invite-row"><input id="inviteLink" type="url" readonly><button id="copy" class="primary">Копировать</button></div>
+</div>
+<form id="joinBox" hidden><label><span>Ваше имя <span class="optional">· необязательно</span></span><input id="joinName" maxlength="28" placeholder="Гость" autocomplete="nickname"></label><button id="join" class="primary">Занять место</button></form>
+<p id="drawNotice" role="status" hidden></p>
+<div class="room-actions">
+<button id="cancelQuick" class="quiet" hidden>Отменить поиск</button><button id="drawOffer" class="quiet" hidden>Предложить ничью</button><button id="drawDecline" class="quiet" hidden>Отклонить ничью</button><button id="resign" class="quiet" hidden>Сдаться</button>
+<button id="rematch" class="primary" hidden>Новая тренировка</button>
+<a href="/" class="back"><span class="ui-icon art-back" aria-hidden="true"><span class="icon-fallback">←</span></span> В игровой зал</a>
+</div>
+</section>
+<p id="notice" role="status"></p>
+<figure class="team-art">
+<img data-visual-src="/teams.webp" alt="" decoding="async" loading="lazy">
+<figcaption><b>Две команды</b><span>Красные и зелёные · синие и оранжевые</span></figcaption>
+</figure>
+</section>
+<section class="play" aria-label="Игровая доска">
+<div id="boardStatus" class="board-status">
+<div class="turn-line"><h2 id="status" aria-live="polite" aria-atomic="true"></h2><span id="clockLabel"></span></div>
+<p id="roomHint"></p>
+<p id="connection" role="status" hidden></p>
+</div>
+<div id="north" class="pair"></div>
+<div id="board" role="group" aria-label="Шахматная доска" aria-describedby="boardHelp"></div>
+<p id="boardHelp" class="sr-only">Стрелки перемещают фокус по клеткам. Enter выбирает клетку. Escape отменяет выбор.</p>
+<div id="south" class="pair"></div>
+<p id="boardMessage" role="status"></p>
+</section>
+<section class="panel log"><div class="loghead"><h2>Журнал ходов</h2><span id="count">0</span></div><ol id="history"></ol>
+<div class="replay-controls" id="replayControls" hidden>
+<button id="prevMove" type="button" aria-label="Предыдущая позиция"><span class="ui-icon art-back" aria-hidden="true"><span class="icon-fallback">←</span></span></button><span id="replayStatus" role="status"></span><button id="nextMove" type="button" aria-label="Следующая позиция"><span class="ui-icon art-next" aria-hidden="true"><span class="icon-fallback">→</span></span></button>
+</div>
+<button id="export" class="quiet" hidden>Скачать запись</button>
+<button id="fenExport" class="quiet" hidden>Скачать FEN</button>
+<button id="analyze" class="quiet" hidden>Предложить ход</button>
+<button id="explain" class="quiet" hidden disabled>Объяснить ход</button>
+<p id="analysisText" role="status"></p><p id="mentorText" role="status"></p><p id="empty">Здесь будут ходы текущей партии.</p></section>
+</div>
+</main>
+<footer class="site-footer">
+<span>БРИКС / ШАХМАТНЫЙ КЛУБ</span>
+<!-- support-credit:start -->
+<div class="support-credit"><span>Разработано при поддержке</span><img src="/red-soft.png" alt="РЕД СОФТ" width="1590" height="795"></div>
+<!-- support-credit:end -->
+<span id="footerVariant">10 × 10 · 4 ЦВЕТА</span>
+</footer>
+<dialog id="rulebook" aria-labelledby="rulebookTitle">
+<form method="dialog"><button class="close" aria-label="Закрыть"><span class="ui-icon art-close" aria-hidden="true"><span class="icon-fallback">×</span></span></button></form>
+<div class="eyebrow">СПРАВОЧНИК</div><h2 id="rulebookTitle">Правила игры</h2>
+<div class="rulebook-art" aria-hidden="true"><img data-visual-src="/brics-leap.webp" alt="" decoding="async"></div>
+<p id="classicRules" hidden>Белые ходят первыми. Доска 8×8, играют два человека. Действуют классические правила рокировки, взятия на проходе и превращения пешки. В этой версии ничья по троекратному повторению и правилу 50 ходов фиксируется автоматически.</p>
+<div id="bricsRules"><ol>
+<li id="teamRules">Очередь хода: красные → оранжевые → зелёные → синие. У красных и зелёных общий король на e1, у оранжевых и синих — на e10. Каждый игрок двигает фигуры своего цвета.</li>
+<li id="duelRules" hidden>Красные и оранжевые ходят по очереди. Каждый игрок управляет всеми 20 фигурами своей стороны. Короли начинают на e1 и e10.</li>
+<li><svg class="piece c2 rule-piece" viewBox="0 0 48 48" aria-hidden="true"><use href="/pieces.svg#x"/></svg><span class="piece-art rule-art piece-x c2" aria-hidden="true"></span> Фигура БРИКС начинает на c1, h1, c10 и h10. Она прыгает на любую клетку внешней границы квадрата 7×7 с центром на её текущей клетке. Фигуры на пути ей не мешают.</li>
+<li>Первый ход пешки — до четырёх свободных клеток вперёд. Взятие на одну клетку по диагонали. На дальней горизонтали можно выбрать ферзя, ладью, слона, коня или БРИКС.</li>
+<li>При рокировке король меняется местами с любой своей фигурой или фигурой союзника на той же горизонтали, кроме пешки. Ни король, ни выбранная фигура не должны были ходить. Фигуры между ними и угроза королю не препятствуют рокировке.</li>
+<li>Взятие короля соперника приносит победу. Угроза королю не ограничивает обычные ходы. При отсутствии доступных ходов у текущего цвета объявляется ничья. Сдача или просрочка часов означает поражение всей стороны.</li>
+</ol>
+<p>В этой версии нет взятия на проходе и автоматической ничьей по повторению позиции или счётчику ходов.</p></div>
+</dialog>
+<dialog id="settingsDialog" aria-labelledby="settingsTitle">
+<form method="dialog"><button class="close" aria-label="Закрыть"><span class="ui-icon art-close" aria-hidden="true"><span class="icon-fallback">×</span></span></button></form>
+<h2 id="settingsTitle">Настройки доски</h2>
+<label>Тема<select id="boardTheme"><option value="sage">Шалфей</option><option value="wood">Орех</option><option value="slate">Сланец</option><option value="contrast">Высокий контраст</option></select></label>
+<label class="check-option"><input id="showCoordinates" type="checkbox" checked> Координаты клеток</label>
+<fieldset class="audio-settings">
+<legend>Аудио</legend>
+<label class="check-option"><input id="soundEnabled" type="checkbox"> Игровые звуки</label>
+<label>Громкость звуков<input id="effectsVolume" type="range" min="0" max="100" value="65"></label>
+<label class="check-option"><input id="musicEnabled" type="checkbox"> Фоновая музыка</label>
+<label>Громкость музыки<input id="musicVolume" type="range" min="0" max="100" value="30"></label>
+</fieldset>
+</dialog>
+<dialog id="studyDialog" aria-labelledby="studyTitle">
+<form method="dialog"><button class="close" aria-label="Закрыть"><span class="ui-icon art-close" aria-hidden="true"><span class="icon-fallback">×</span></span></button></form>
+<h2 id="studyTitle">Разбор и задачи</h2>
+<form id="studyForm">
+<label>Формат<select id="studyFormat"><option value="pgn">Партия PGN</option><option value="fen">Позиция FEN</option><option value="brics">Позиция БРИКС (JSON)</option></select></label>
+<label>Запись или позиция<textarea id="studyText" rows="5" maxlength="30000" required></textarea></label>
+<button class="primary" type="submit">Открыть на доске</button>
+</form>
+<p id="studyNotice" role="status"></p>
+<h3>Мат в один ход</h3>
+<div id="puzzles"></div>
+</dialog>
+<dialog id="accountDialog" aria-labelledby="accountTitle">
+<form method="dialog"><button class="close" aria-label="Закрыть"><span class="ui-icon art-close" aria-hidden="true"><span class="icon-fallback">×</span></span></button></form>
+<h2 id="accountTitle">Аккаунт</h2>
+<form id="credentials">
+<label>Действие<select id="accountMode"><option value="login">Войти</option><option value="register">Создать аккаунт</option><option value="recover">Восстановить пароль</option></select></label>
+<label>Логин<input id="accountLogin" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}"></label>
+<label id="recoveryField" hidden>Код восстановления<input id="recoveryCode" autocomplete="off" maxlength="32"></label>
+<label id="passwordLabel">Пароль<input id="accountPassword" type="password" required minlength="12" maxlength="128" autocomplete="current-password"></label>
+<button class="primary" type="submit">Продолжить</button>
+</form>
+<section id="accountProfile" hidden>
+<p id="profileLogin"></p>
+<form id="profileForm">
+<label>Имя игрока<input id="profileName" required maxlength="28"></label>
+<label>О себе<textarea id="profileBio" rows="2" maxlength="200"></textarea></label>
+<label class="check-option"><input id="profileVisible" type="checkbox"> Публичный профиль и участие в таблице рейтингов</label>
+<button class="primary" type="submit">Сохранить профиль</button>
+</form>
+<h3>Рейтинги и результаты</h3><ul id="profileStats"></ul>
+<h3>Мои партии</h3><ul id="profileHistory"></ul>
+<button id="logout" type="button">Выйти</button>
+</section>
+<p id="accountNotice" role="status"></p>
+<label id="recoveryResult" hidden>Код восстановления. Сохраните его в надёжном месте.<input id="issuedCode" readonly></label>
+</dialog>
+<dialog id="tournamentDialog" aria-labelledby="tournamentTitle">
+<form method="dialog"><button class="close" aria-label="Закрыть"><span class="ui-icon art-close" aria-hidden="true"><span class="icon-fallback">×</span></span></button></form>
+<h2 id="tournamentTitle">Турниры</h2>
+<p>Классические шахматы на выбывание. Сетка стартует, когда заняты все места. При ничьей играется новая партия со сменой цвета. Если все три партии завершились вничью, проходят чёрные третьей партии.</p>
+<form id="tournamentForm">
+<label>Название турнира<input id="tournamentName" maxlength="60" required></label>
+<label>Участники<select id="tournamentSize"><option>4</option><option>8</option></select></label>
+<p id="tournamentTime"></p>
+<button class="primary" type="submit">Создать турнир</button>
+</form>
+<p id="tournamentNotice" role="status"></p>
+<section id="tournamentList" aria-label="Список турниров"></section>
+<button id="tournamentRefresh" class="quiet" type="button">Обновить сетку</button>
+</dialog>
+<dialog id="communityDialog" aria-labelledby="communityTitle">
+<form method="dialog"><button class="close" aria-label="Закрыть"><span class="ui-icon art-close" aria-hidden="true"><span class="icon-fallback">×</span></span></button></form>
+<h2 id="communityTitle"></h2>
+<label id="ratingPoolLabel" hidden>Раздел рейтинга<select id="ratingPool"></select></label>
+<p id="communityStatus" role="status"></p>
+<ol id="communityList"></ol>
+</dialog>
+<dialog id="lobby" aria-labelledby="lobbyTitle">
+<form method="dialog"><button class="close" aria-label="Закрыть"><span class="ui-icon art-close" aria-hidden="true"><span class="icon-fallback">×</span></span></button></form>
+<h2 id="lobbyTitle">Открытые комнаты</h2>
+<p id="lobbyStatus" role="status"></p>
+<ul id="lobbyList"></ul>
+<button id="lobbyRefresh" class="quiet" type="button">Обновить список</button>
+</dialog>
+<dialog id="promote" aria-labelledby="promoteTitle"><h2 id="promoteTitle">Превращение пешки</h2><form method="dialog"><button value="q"><span class="piece-art promotion-art piece-q" aria-hidden="true"></span>Ферзь</button><button value="r"><span class="piece-art promotion-art piece-r" aria-hidden="true"></span>Ладья</button><button value="b"><span class="piece-art promotion-art piece-b" aria-hidden="true"></span>Слон</button><button value="n"><span class="piece-art promotion-art piece-n" aria-hidden="true"></span>Конь</button><button id="promoteBrics" value="x"><span class="piece-art promotion-art piece-x" aria-hidden="true"></span>БРИКС</button><button value="" class="quiet">Отмена</button></form></dialog>
+<dialog id="resignDialog" aria-labelledby="resignTitle">
+<h2 id="resignTitle">Сдаться за команду?</h2>
+<p id="resignDetails">Партия завершится, победа будет засчитана соперникам.</p>
+<form method="dialog" class="dialog-actions"><button value="" autofocus>Продолжить игру</button><button value="resign" class="danger">Сдаться</button></form>
+</dialog>
+</body>
+</html>
+
+
+
